@@ -4,6 +4,7 @@ import Layout from "./components/Layout"
 import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import Lancamentos from "./pages/Lancamentos"
+import Estoque from "./pages/Estoque"
 
 const queryClient = new QueryClient()
 
@@ -17,10 +18,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-
           <Route path="/login" element={<Login />} />
-
-          {/* Todas as rotas protegidas ficam dentro do Layout */}
           <Route
             path="/"
             element={
@@ -29,10 +27,10 @@ export default function App() {
               </RotaProtegida>
             }
           >
-            <Route index             element={<Dashboard />}   />
+            <Route index              element={<Dashboard />}   />
             <Route path="lancamentos" element={<Lancamentos />} />
+            <Route path="estoque"     element={<Estoque />}     />
           </Route>
-
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
