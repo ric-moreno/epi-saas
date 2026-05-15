@@ -20,6 +20,51 @@ const CAMPOS_INICIAIS = {
   observacao: "",
 }
 
+// ──────────────────────────────────────────────────────────────
+// Campo declarado FORA do FormLancamento — evita perda de foco
+// ──────────────────────────────────────────────────────────────
+function Campo({ label, name, type = "text", obrigatorio = false, opcoes, value, onChange }) {
+  if (opcoes) {
+    return (
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">
+          {label}
+        </label>
+        <select
+          name={name}
+          value={value}
+          onChange={onChange}
+          required={obrigatorio}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {opcoes.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-600 mb-1">
+        {label} {obrigatorio && <span className="text-red-500">*</span>}
+      </label>
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        required={obrigatorio}
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+  )
+}
+
+// ──────────────────────────────────────────────────────────────
+// Formulário principal
+// ──────────────────────────────────────────────────────────────
 export default function FormLancamento({ lancamento, onFechar }) {
   const editando = !!lancamento
 
@@ -61,46 +106,14 @@ export default function FormLancamento({ lancamento, onFechar }) {
     }
   }
 
-  // Campo reutilizável
-  function Campo({ label, name, type = "text", obrigatorio = false, opcoes }) {
-    if (opcoes) {
-      return (
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
-          <select
-            name={name}
-            value={form[name]}
-            onChange={handleChange}
-            required={obrigatorio}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {opcoes.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </div>
-      )
-    }
-
-    return (
-      <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">
-          {label} {obrigatorio && <span className="text-red-500">*</span>}
-        </label>
-        <input
-          type={type}
-          name={name}
-          value={form[name]}
-          onChange={handleChange}
-          required={obrigatorio}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-    )
-  }
+  // Calcula R$ Total em tempo real
+  const rsTotal =
+    form.qtde && form.rs_unitario
+      ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" })
+          .format(parseFloat(form.qtde) * parseFloat(form.rs_unitario))
+      : "R$ 0,00"
 
   return (
-    // Fundo escuro
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
 
@@ -117,40 +130,105 @@ export default function FormLancamento({ lancamento, onFechar }) {
         {/* Formulário */}
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
 
-          {/* Linha 1 */}
+          {/* Linha 1 — Data e Tipo */}
           <div className="grid grid-cols-2 gap-4">
-            <Campo label="Data"      name="data"     type="date" obrigatorio />
-            <Campo label="Tipo"      name="tipo_mov" opcoes={[
-              { value: "ENTRADA", label: "ENTRADA" },
-              { value: "SAÍDA",   label: "SAÍDA"   },
-            ]} />
+            <Campo
+              label="Data"
+              name="data"
+              type="date"
+              obrigatorio
+              value={form.data}
+              onChange={handleChange}
+            />
+            <Campo
+              label="Tipo"
+              name="tipo_mov"
+              value={form.tipo_mov}
+              onChange={handleChange}
+              opcoes={[
+                { value: "ENTRADA", label: "ENTRADA" },
+                { value: "SAÍDA",   label: "SAÍDA"   },
+              ]}
+            />
           </div>
 
-          {/* Linha 2 */}
+          {/* Linha 2 — Matrícula e Nome */}
           <div className="grid grid-cols-2 gap-4">
-            <Campo label="Matrícula / CNPJ" name="matr_cnpj" />
-            <Campo label="Nome do Funcionário" name="nome" obrigatorio />
+            <Campo
+              label="Matrícula / CNPJ"
+              name="matr_cnpj"
+              value={form.matr_cnpj}
+              onChange={handleChange}
+            />
+            <Campo
+              label="Nome do Funcionário"
+              name="nome"
+              obrigatorio
+              value={form.nome}
+              onChange={handleChange}
+            />
           </div>
 
-          {/* Linha 3 */}
+          {/* Linha 3 — Código e Categoria */}
           <div className="grid grid-cols-2 gap-4">
-            <Campo label="Código do Item" name="codigo" obrigatorio />
-            <Campo label="Categoria"      name="categoria" />
+            <Campo
+              label="Código do Item"
+              name="codigo"
+              obrigatorio
+              value={form.codigo}
+              onChange={handleChange}
+            />
+            <Campo
+              label="Categoria"
+              name="categoria"
+              value={form.categoria}
+              onChange={handleChange}
+            />
           </div>
 
           {/* Descrição */}
-          <Campo label="Descrição do Item" name="descricao" obrigatorio />
+          <Campo
+            label="Descrição do Item"
+            name="descricao"
+            obrigatorio
+            value={form.descricao}
+            onChange={handleChange}
+          />
 
-          {/* Linha 4 */}
+          {/* Linha 4 — Justificativa e Nota Fiscal */}
           <div className="grid grid-cols-2 gap-4">
-            <Campo label="Justificativa" name="justificativa" />
-            <Campo label="Nota Fiscal"   name="nota_fiscal" />
+            <Campo
+              label="Justificativa"
+              name="justificativa"
+              value={form.justificativa}
+              onChange={handleChange}
+            />
+            <Campo
+              label="Nota Fiscal"
+              name="nota_fiscal"
+              value={form.nota_fiscal}
+              onChange={handleChange}
+            />
           </div>
 
-          {/* Linha 5 — Qtde e Valor */}
+          {/* Linha 5 — Qtde, Valor e Total */}
           <div className="grid grid-cols-3 gap-4">
-            <Campo label="Quantidade"    name="qtde"        type="number" obrigatorio />
-            <Campo label="R$ Unitário"   name="rs_unitario" type="number" obrigatorio />
+            <Campo
+              label="Quantidade"
+              name="qtde"
+              type="number"
+              obrigatorio
+              value={form.qtde}
+              onChange={handleChange}
+            />
+            <Campo
+              label="R$ Unitário"
+              name="rs_unitario"
+              type="number"
+              obrigatorio
+              value={form.rs_unitario}
+              onChange={handleChange}
+            />
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">
                 R$ Total
@@ -158,27 +236,40 @@ export default function FormLancamento({ lancamento, onFechar }) {
               <input
                 type="text"
                 readOnly
-                value={
-                  form.qtde && form.rs_unitario
-                    ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" })
-                        .format(parseFloat(form.qtde) * parseFloat(form.rs_unitario))
-                    : "R$ 0,00"
-                }
+                value={rsTotal}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-600"
               />
             </div>
           </div>
 
-          {/* Linha 6 — EPI específico */}
+          {/* Linha 6 — CA, Série e Vencimento */}
           <div className="grid grid-cols-3 gap-4">
-            <Campo label="CA (Certificado)"  name="ca" />
-            <Campo label="Nº de Série"       name="nr_serie" />
-            <Campo label="Data de Vencimento" name="data_vencimento" type="date" />
+            <Campo
+              label="CA (Certificado)"
+              name="ca"
+              value={form.ca}
+              onChange={handleChange}
+            />
+            <Campo
+              label="Nº de Série"
+              name="nr_serie"
+              value={form.nr_serie}
+              onChange={handleChange}
+            />
+            <Campo
+              label="Data de Vencimento"
+              name="data_vencimento"
+              type="date"
+              value={form.data_vencimento}
+              onChange={handleChange}
+            />
           </div>
 
           {/* Observação */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Observação</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Observação
+            </label>
             <textarea
               name="observacao"
               value={form.observacao}
