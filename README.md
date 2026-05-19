@@ -26,7 +26,6 @@ Sistema web para controle de Equipamentos de Proteção Individual (EPI) e almox
 ### Infraestrutura
 - **Railway** — Hospedagem do backend
 - **Vercel** — Hospedagem do frontend
-- **Supabase** — Banco de dados PostgreSQL na nuvem
 
 ---
 
@@ -65,7 +64,7 @@ epi-saas/
 │   ├── alembic/              # Migrations
 │   ├── requirements.txt
 │   ├── Procfile
-│   └── .env                  # ⚠️ Não commitar
+│   └── .env                  
 │
 └── frontend/                 # Interface React
     ├── src/
@@ -74,7 +73,7 @@ epi-saas/
     │   ├── pages/            # Telas do sistema
     │   └── utils/            # Utilitários
     ├── vercel.json
-    └── .env.production       # ⚠️ Não commitar
+    └── .env.production       
 ```
 
 ---
@@ -147,7 +146,6 @@ ALLOWED_ORIGINS=http://localhost:5173
 VITE_API_URL=http://localhost:8000
 ```
 
-> ⚠️ **Nunca commite os arquivos `.env` com credenciais reais.**
 
 ---
 
