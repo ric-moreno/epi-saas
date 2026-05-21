@@ -212,4 +212,4 @@ style:    formatação, sem mudança de lógica
 
 ## 📄 Licença
 
-Proprietário — todos os direitos reservados.
+Desenvolvido por: Pedro Ricardo Moreno.
