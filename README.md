@@ -211,5 +211,5 @@ style:    formatação, sem mudança de lógica
 ---
 
 ## 📄 Licença
-
-Desenvolvido por: Pedro Ricardo Moreno.
+Desenvolvido por: Pedro Ricardo Moreno
+https://www.linkedin.com/in/pedroricardomoreno/
